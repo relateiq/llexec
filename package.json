@@ -4,8 +4,18 @@
   "description": "Execute arbitrary commands in parallel",
   "main": "lib/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node_modules/tape/bin/tape .src/**/*.spec.js",
+    "start": "node_modules/typescript/bin/tsc -p src -w",
+    "build": "node_modules/typescript/bin/tsc -p src"
   },
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "tape": "~4.6.0",
+    "typescript": "~1.8.10",
+    "typings": "~1.3.1"
+  },
+  "dependencies": {
+    "colors": "~1.1.2"
+  }
 }

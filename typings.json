@@ -1,4 +1,9 @@
 {
   "name": "llexec",
-  "dependencies": {}
+  "dependencies": { },
+  "globalDependencies": {
+    "node": "github:DefinitelyTyped/DefinitelyTyped/node/node.d.ts#1fa3e10e0175d352b149ccbca794c9438d702b4e",
+    "es6-shim": "github:DefinitelyTyped/DefinitelyTyped/es6-shim/es6-shim.d.ts#7de6c3dd94feaeb21f20054b9f30d5dabc5efabd",
+    "tape": "github:DefinitelyTyped/DefinitelyTyped/tape/tape.d.ts#7de6c3dd94feaeb21f20054b9f30d5dabc5efabd"
+  }
 }
