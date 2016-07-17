@@ -46,7 +46,11 @@ const subcommands = argv._.map(commandString => {
 
 const instance = new Executor(lineWrappers[argv.w]);
 
-instance.run(subcommands).then(function(exitCode) {
-  process.exit();
+instance.run(subcommands).then(function() {
+  process.exit(0);
+}).catch(function(failedJobs) {
+  console.error();
+  failedJobs.forEach(j => console.error(`[llexec: job failed]: ${j.cmd}`));
+  process.exit(1);
 });
 

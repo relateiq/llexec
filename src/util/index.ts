@@ -25,10 +25,6 @@ export function getMaxLength(strs: string[]): number {
   }, 0);
 }
 
-export function getMaxCmdLength(taskList: ITask[]): number {
-  return getMaxLength(taskList.map(t => t.command));
-}
-
 export function getColorFuncForIndex(index: number): Function {
   return colors[ColorPalette[index % ColorPalette.length]];
 }
