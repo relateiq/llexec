@@ -8,3 +8,4 @@ For now, this is going to be a list of planned features/wish-list.
   [ ] teamcity wrappers
   [ ] fixed-width option
 [ ] documented JS api
+[ ] trap ctrl-c and force-kill the process tree
