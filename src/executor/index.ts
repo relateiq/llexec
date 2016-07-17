@@ -1,19 +1,35 @@
+import { BufferedOutput } from '../buffered-output';
+import { ITask, ITaskInfo } from '../task';
+
 const childProcess = require('child_process');
-
-import { BasicColoredOutput, ColorPalette } from '../buffered-output/colored-output';
-import { ITask } from '../task';
-
-const possibleColors = Object.keys(ColorPalette);
 
 export class Executor {
   public taskList: ITask[] = [];
+  private _maxCmdLength: number = 0;
 
-  constructor() { }
+  constructor(public lineWrapper?: (taskInfo: ITaskInfo, line: string) => string) {
+  }
 
   private _run(task: ITask, taskIndex: number, resolve: Function, reject: Function): void {
-    let child = childProcess.spawn(task.command, task.args);
-    let taskColor = possibleColors[taskIndex % possibleColors.length];
-    let stdoutBuf = new BasicColoredOutput(taskColor, child.stdout);
+    let child = childProcess.exec(task.command);
+
+    let [ cmd, args ] = task.command.split(/\s/);
+
+    let taskInfo = {
+      task: task,
+      commandName: cmd,
+      argStr: args || '',
+      allTasks: this.taskList,
+      taskIndex: taskIndex
+    };
+
+    let stdoutBuf = new BufferedOutput(child.stdout, line => {
+      if (!this.lineWrapper) {
+        return line;
+      }
+
+      return this.lineWrapper(taskInfo, line);
+    });
 
     child.on('close', (code) => {
       // flush the buffers
@@ -31,6 +47,10 @@ export class Executor {
 
   private _runTask(task: ITask, index: number): Promise<any> {
     this.taskList.push(task);
+
+    if (task.command.length > this._maxCmdLength) {
+      this._maxCmdLength = task.command.length;
+    }
 
     return new Promise((resolve, reject) => {
       this._run(task, index, resolve, reject);
