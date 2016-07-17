@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Execute arbitrary commands in parallel",
   "main": "lib/index.js",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
   "scripts": {
     "test": "node_modules/tape/bin/tape .src/**/*.spec.js",
     "start": "node_modules/typescript/bin/tsc -p src -w",
