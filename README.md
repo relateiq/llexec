@@ -2,8 +2,9 @@ llexec
 ===================================================================================================
 
 # goals:
-  * run arbitrary commands in parallel as if it was a single process
+  * run arbitrary commands in parallel
   * to provide good output buffering for use in build runners / jobs w/a lot of output
+  * provide a way to wrap output to distinguish messages from different commands
 
 # not goals:
   * running the same command in parallel on a list of inputs
@@ -11,60 +12,34 @@ llexec
   * job management (starting/stopping background processes)
   * distributed processing (eg: running across machines)
 
-# requirements:
-  * accept command list as arguments or from STDIN
-  * run commands in parallel processes
-  * ability to buffer by N lines, by N ms, or not at all
-  * have a predictable exit code that conforms to normal UNIX codes
-  * ability to wrap lines with additional content (timestamps, teamcity msgs, etc.)
-  * fail immediately on any subjob failure
-
-# flush modes:
-  * every N lines (or 0 for unlimited)
-  * every N ms (or 0 for unlimited)
-  * if no output in N ms (or 0 for 'no buffering')
-
-examples
+installation
 ===================================================================================================
 
-# js api
+`npm install -g llexec`
 
-```typescript
-// configure an instance of llexec with specific flush modes
-// and line wrapping strategies
-var llconfig = llexec.config({
-  flushMode: 'line' | 'period' | 'chunking',
-  flushThreshold: 1000,
-  wrap: function(commandInfo, lineContent) {
-    let line = lineContent;
+usage
+===================================================================================================
 
-    if (commandInfo.command.startsWith('iqb')) {
-      line = (new Date().toString()) + ' |';
-    }
+`llexec` is designed to be run as a CLI.
 
-    return line;
-  }
-});
-
-// create a new job with that configuration
-var job = llconfig.tasks([
-  'iqb build:ts',
-  'iqb build:scss'
-  'iqb build:libs'
-  'iqb build:templates'
-]);
-
-// run the job
-executor.run().then(function(results) {
-});
 ```
+llexec - run arbitrary commands in parallel
 
-# cli (shell wrapper around JS API)
+llexec is designed to take a list of commands, run them in parallel, and perform
+output buffering on the results so the output is human-readable.
 
+usage:
+  llexec [-w line-wrapper] cmd [, cmd, [...]]
 
-# riq-specific wrapper
+  possible line-wrappers:
+    cmdname     prefixes each line with the name of the command
+    firstarg    prefixes each line with the first argument (useful for build tools)
+    timestamp   prefixes each line with a timestamp
 
-Wrap the JSAPI in a simple wrapper that handles configuration, line buffering,
-special transformations, etc. and just lets you pipe in the commands you need.
+examples:
+
+  llexec -w cmdname 'tsc -p src/' 'scss -w scss/'
+  llexec -w firstarg 'make module1' 'make module2'
+```
 
 

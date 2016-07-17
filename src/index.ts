@@ -16,9 +16,25 @@ const lineWrappers = {
 const argv = require('yargs').argv;
 
 if (argv._.length < 1) {
-  console.log('Run arbitrary commands in parallel');
-  console.log('');
-  console.log('   llexec "cmd 1" "cmd 2" "cmd 3"');
+  console.log(`
+llexec - run arbitrary commands in parallel
+
+llexec is designed to take a list of commands, run them in parallel, and perform
+output buffering on the results so the output is human-readable.
+
+usage:
+  llexec [-w line-wrapper] cmd [, cmd, [...]]
+
+  possible line-wrappers:
+    cmdname:    prefixes each line with the name of the command
+    firstarg:   prefixes each line with the first argument (useful for build tools)
+    timestamp:  prefixes each line with a timestamp
+
+examples:
+
+  llexec -w cmdname 'tsc -p src/' 'scss -w scss/'
+  llexec -w firstarg 'make module1' 'make module2'
+`);
   process.exit(1);
 }
 
