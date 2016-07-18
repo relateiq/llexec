@@ -1,5 +1,6 @@
 import { BufferedOutput } from '../buffered-output';
 import { ITask, ITaskInfo } from '../task';
+import { tokenize } from '../arg-tokenizer';
 
 const childProcess = require('child_process');
 
@@ -12,36 +13,41 @@ export class Executor {
   }
 
   private _run(task: ITask, taskIndex: number, resolve: Function, reject: Function): void {
-    let child = childProcess.exec(task.command, {}, (error) => {
-      // just exit quietly if no error
-      if (!error) {
-        resolve(0);
-        return;
-      }
+    let [ command, ...args ] = tokenize(task.command);
+    let stdoutBuf = null;
 
-      // otherwise bubble the error up
-      if (error['killed']) {
-        reject(false);
+    let child = childProcess.spawn('bash', ['-c', task.command]);
+
+    child.on('exit', (code) => {
+      // flush the buffers
+      stdoutBuf.done();
+ 
+      // resolve promise with the exit code
+      if (code > 0) {
+        // otherwise bubble the error up
+        this.killall();
+        reject({
+          killed: child['killed'],
+          command: task.command
+        });
       }
       else {
-        reject(error);
+        resolve(true);
       }
-      this.killall();
     });
 
     this._runningProcs[taskIndex] = child;
 
-    let [ cmd, args ] = task.command.split(/\s/);
-
     let taskInfo = {
       task: task,
-      commandName: cmd,
-      argStr: args || '',
+      commandName: command,
+      argList: args,
+      argStr: args.join(' '),
       allTasks: this.taskList,
       taskIndex: taskIndex
     };
 
-    let stdoutBuf = new BufferedOutput(child.stdout, line => {
+    stdoutBuf = new BufferedOutput(child.stdout, line => {
       if (!this.lineWrapper) {
         return line;
       }

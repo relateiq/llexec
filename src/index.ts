@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// vim: ft=typescript
 
 ///<reference path="../typings/index.d.ts" />
 
@@ -50,7 +51,7 @@ instance.run(subcommands).then(function() {
   process.exit(0);
 }).catch(function(failedJobs) {
   console.error();
-  failedJobs.forEach(j => console.error(`[llexec: job failed]: ${j.cmd}`));
+  failedJobs.forEach(j => console.error(`[llexec: job failed]: ${j.command}`));
   process.exit(1);
 });
 
