@@ -1,17 +1,22 @@
 #!/usr/bin/env node
 
 var x = 0;
+var max = Number(process.argv[2]);
+
+if (isNaN(max)) {
+  max = 50;
+}
 
 function timeoutCallback() {
   console.log('some output for iteration', x);
   x++;
 
-  if (x < 50) {
-    if (Math.random() < 0.15) {
+  if (max === 0 || x < max) {
+    if (Math.random() < 0.05) {
       setTimeout(timeoutCallback, 500 + (Math.random() * 500));
     }
     else {
-      setTimeout(timeoutCallback, Math.random() * 100);
+      setTimeout(timeoutCallback, 0);
     }
   }
 }
