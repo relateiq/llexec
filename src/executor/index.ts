@@ -20,7 +20,7 @@ export class Executor {
 
     let child = childProcess.spawn('bash', ['-c', task.command]);
 
-    child.on('exit', (code) => {
+    child.on('close', (code) => {
       // flush the buffers
       stdoutBuf.done();
       stderrBuf.done();
@@ -60,7 +60,7 @@ export class Executor {
 
     stderrBuf = new BufferedOutput(child.stderr, line => {
       const lineWrapper = this.lineWrapper || ((ti, l) => l);
-      return colors.bgRed(lineWrapper(taskInfo, line));
+      return lineWrapper(taskInfo, colors.bgRed(colors.white(line)));
     });
   }
 
