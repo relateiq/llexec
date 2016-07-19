@@ -1,0 +1,5 @@
+#!/usr/bin/env node
+
+setTimeout(function() {
+  eval('foo + bar = 3');
+}, 2000);

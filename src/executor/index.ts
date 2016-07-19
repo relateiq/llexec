@@ -3,6 +3,7 @@ import { ITask, ITaskInfo } from '../task';
 import { tokenize } from '../arg-tokenizer';
 
 const childProcess = require('child_process');
+const colors = require('colors');
 
 export class Executor {
   public taskList: ITask[] = [];
@@ -15,12 +16,14 @@ export class Executor {
   private _run(task: ITask, taskIndex: number, resolve: Function, reject: Function): void {
     let [ command, ...args ] = tokenize(task.command);
     let stdoutBuf = null;
+    let stderrBuf = null;
 
     let child = childProcess.spawn('bash', ['-c', task.command]);
 
     child.on('exit', (code) => {
       // flush the buffers
       stdoutBuf.done();
+      stderrBuf.done();
  
       // resolve promise with the exit code
       if (code > 0) {
@@ -53,6 +56,11 @@ export class Executor {
       }
 
       return this.lineWrapper(taskInfo, line);
+    });
+
+    stderrBuf = new BufferedOutput(child.stderr, line => {
+      const lineWrapper = this.lineWrapper || ((ti, l) => l);
+      return colors.bgRed(lineWrapper(taskInfo, line));
     });
   }
 
