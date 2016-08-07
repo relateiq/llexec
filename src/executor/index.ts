@@ -11,6 +11,14 @@ export class Executor {
   private _runningProcs: any = [];
 
   constructor(public lineWrapper?: (taskInfo: ITaskInfo, line: string) => string) {
+    process.on('SIGTERM', this._cleanup.bind(this, 'TERM'));
+    process.on('SIGINT', this._cleanup.bind(this, 'INT'));
+    process.on('SIGHUP', this._cleanup.bind(this, 'HUP'));
+  }
+
+  private _cleanup(signal) {
+    this._runningProcs.forEach(proc => proc.kill());
+    process.exit(0);
   }
 
   private _run(task: ITask, taskIndex: number, resolve: Function, reject: Function): void {
