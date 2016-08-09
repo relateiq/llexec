@@ -3,8 +3,8 @@ const colors = require('colors');
 
 export const ColorPalette = [
   'blue',    'green', 'yellow',
-  'magenta', 'cyan',  'white',
-  'black',   'red',   'gray'
+  'magenta', 'cyan',  'red',
+  'gray'
 ];
 
 export function rightPad(str: string, len: number) {
