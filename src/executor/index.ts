@@ -17,7 +17,7 @@ export class Executor {
   }
 
   private _cleanup(signal) {
-    this._runningProcs.forEach(proc => proc.kill());
+    this.killall();
     process.exit(0);
   }
 

@@ -52,6 +52,7 @@ instance.run(subcommands).then(function() {
 }).catch(function(failedJobs) {
   console.error();
   failedJobs.forEach(j => console.error(`[llexec: job failed]: ${j.command}`));
+  instance.killall();
   process.exit(1);
 });
 
