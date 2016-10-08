@@ -18,7 +18,6 @@ export class Executor {
 
   private _cleanup(signal) {
     this.killall();
-    process.exit(0);
   }
 
   private _run(task: ITask, taskIndex: number, resolve: Function, reject: Function): void {
@@ -26,17 +25,29 @@ export class Executor {
     let stdoutBuf = null;
     let stderrBuf = null;
 
-    let child = childProcess.spawn('bash', ['-c', task.command]);
+    if (!task.command) {
+      return;
+    }
 
-    child.on('close', (code) => {
+    let child = childProcess.spawn('sh', ['-c', task.command]);
+
+    child.on('close', code => {
       // flush the buffers
       stdoutBuf.done();
       stderrBuf.done();
- 
+    });
+
+    child.on('exit', (code, signal) => {
       // resolve promise with the exit code
       if (code > 0) {
         // otherwise bubble the error up
         this.killall();
+        reject({
+          killed: child['killed'],
+          command: task.command
+        });
+      }
+      else if (signal) {
         reject({
           killed: child['killed'],
           command: task.command
@@ -85,7 +96,14 @@ export class Executor {
   }
 
   public killall() {
-    this._runningProcs.forEach(proc => proc && proc.kill());
+    const curPid = process.pid - 1; // not sure how reliable this is...
+    const childProcs = childProcess.execSync(`ps -A -o pgid,pid | grep -E '^${curPid}' | awk '{ print $2 }'`);
+
+    childProcs.toString().split(/\n/g).forEach(pid => {
+      try {
+        process.kill(pid);
+      } catch (e) {}
+    });
   }
 
   public run(tasks: ITask[]): Promise<any[]> {

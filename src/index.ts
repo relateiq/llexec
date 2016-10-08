@@ -7,11 +7,13 @@ import { Executor } from './executor';
 import { lineWrapper as cmdnameWrapper } from './canned-wrappers/cmdname-color';
 import { lineWrapper as firstargWrapper } from './canned-wrappers/firstarg-color';
 import { lineWrapper as timestampWrapper } from './canned-wrappers/timestamp-color';
+import { lineWrapper as pidWrapper } from './canned-wrappers/pid-color';
 
 const lineWrappers = {
   'cmdname': cmdnameWrapper,
   'firstarg': firstargWrapper,
-  'timestamp': timestampWrapper
+  'timestamp': timestampWrapper,
+  'pid': pidWrapper
 };
 
 const argv = require('yargs').argv;
@@ -50,8 +52,7 @@ const instance = new Executor(lineWrappers[argv.w]);
 instance.run(subcommands).then(function() {
   process.exit(0);
 }).catch(function(failedJobs) {
-  console.error();
-  failedJobs.forEach(j => console.error(`[llexec: job failed]: ${j.command}`));
+  failedJobs.forEach(j => console.error(`[llexec: (${process.pid}) job failed]: ${j.command}`));
   instance.killall();
   process.exit(1);
 });

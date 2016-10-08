@@ -1,0 +1,13 @@
+#!/bin/zsh
+
+rec=${1:-0}
+cmds=('./testcmd-exit1 15')
+cmds+=('./testcmd-broken')
+
+if [ "$rec" -gt 0 ]; then
+  echo 'making another'
+  num=$((rec - 1))
+  cmds+=("./testcmd-rec $num")
+fi
+
+node lib/index.js -w pid "${cmds[@]}"
