@@ -29,15 +29,13 @@ export class Executor {
       return;
     }
 
-    let child = childProcess.spawn('sh', ['-c', task.command]);
+    let child = childProcess.spawn(command, args);
 
-    child.on('close', code => {
+    child.on('close', (code, signal) => {
       // flush the buffers
       stdoutBuf.done();
       stderrBuf.done();
-    });
 
-    child.on('exit', (code, signal) => {
       // resolve promise with the exit code
       if (code > 0) {
         // otherwise bubble the error up
@@ -96,7 +94,7 @@ export class Executor {
   }
 
   public killall() {
-    const curPid = process.pid - 1; // not sure how reliable this is...
+    const curPid = process.pid; // not sure how reliable this is...
     const childProcs = childProcess.execSync(`ps -A -o pgid,pid | grep -E '^${curPid}' | awk '{ print $2 }'`);
 
     childProcs.toString().split(/\n/g).forEach(pid => {
