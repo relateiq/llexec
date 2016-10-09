@@ -1,6 +1,6 @@
 {
   "name": "llexec",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "author": "",
   "description": "Execute arbitrary commands in parallel",
   "main": "lib/index.js",
