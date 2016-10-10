@@ -29,7 +29,7 @@ export class Executor {
       return;
     }
 
-    let child = childProcess.spawn(command, args);
+    let child = childProcess.spawn('sh', ['-c', task.command]);
 
     child.on('close', (code, signal) => {
       // flush the buffers
@@ -94,7 +94,7 @@ export class Executor {
   }
 
   public killall() {
-    const curPid = process.pid; // not sure how reliable this is...
+    const curPid = process.pid - 1; // not sure how reliable this is...
     const childProcs = childProcess.execSync(`ps -A -o pgid,pid | grep -E '^${curPid}' | awk '{ print $2 }'`);
 
     childProcs.toString().split(/\n/g).forEach(pid => {
