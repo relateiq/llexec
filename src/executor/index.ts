@@ -29,8 +29,16 @@ export class Executor {
       return;
     }
 
+    // NOTE to myself and others: we can't spawn commands directly here, we have to
+    // use `sh -c` for (as of now) 2 reasons:
+    //  * commands can start with env vars, such as `FOO=bar cmdname arg`
+    //  * yargs parser parses some args as `undefined`, which gets converted to a string when the command runs
+    //
+    // basically, spawning tasks directly is a tricky use case that's best handled by 
+    // the system shell rather than llexec.
     let child = childProcess.spawn('sh', ['-c', task.command]);
 
+    // sometimes the 'exit' event fires before the streams are closed... making it basically useless
     child.on('close', (code, signal) => {
       // flush the buffers
       stdoutBuf.done();
@@ -95,8 +103,15 @@ export class Executor {
 
   public killall() {
     const curPid = process.pid - 1; // not sure how reliable this is...
+
+    // this lists all processes along with their process-group id, then filters
+    // down to tasks that are in the current process' group.  then awk filders out
+    // the process group, leaving a list of processes that should be killed
+    //
+    // ...i'd love to be able to do this without `ps`...
     const childProcs = childProcess.execSync(`ps -A -o pgid,pid | grep -E '^${curPid}' | awk '{ print $2 }'`);
 
+    // BURN THEM ALL!!
     childProcs.toString().split(/\n/g).forEach(pid => {
       try {
         process.kill(pid);
