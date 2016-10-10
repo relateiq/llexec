@@ -102,7 +102,10 @@ export class Executor {
   }
 
   public killall() {
-    const curPid = process.pid - 1; // not sure how reliable this is...
+    // not sure how reliable this is... but hopefully pretty darn.
+    // it seems to work, but my guess is that it could potentiall break in rare cases
+    // and cause bad things to happen... we shall see.
+    const curPid = process.pid - 1;
 
     // this lists all processes along with their process-group id, then filters
     // down to tasks that are in the current process' group.  then awk filders out
