@@ -1,22 +1,19 @@
 #!/usr/bin/env node
 // vim: ft=typescript
-
-///<reference path="../typings/index.d.ts" />
-
-import { Executor } from './executor';
-import { lineWrapper as cmdnameWrapper } from './canned-wrappers/cmdname-color';
-import { lineWrapper as firstargWrapper } from './canned-wrappers/firstarg-color';
-import { lineWrapper as timestampWrapper } from './canned-wrappers/timestamp-color';
-import { lineWrapper as pidWrapper } from './canned-wrappers/pid-color';
+import { Executor } from "./executor";
+import { lineWrapper as cmdnameWrapper } from "./canned-wrappers/cmdname-color";
+import { lineWrapper as firstargWrapper } from "./canned-wrappers/firstarg-color";
+import { lineWrapper as timestampWrapper } from "./canned-wrappers/timestamp-color";
+import { lineWrapper as pidWrapper } from "./canned-wrappers/pid-color";
 
 const lineWrappers = {
-  'cmdname': cmdnameWrapper,
-  'firstarg': firstargWrapper,
-  'timestamp': timestampWrapper,
-  'pid': pidWrapper
+  cmdname: cmdnameWrapper,
+  firstarg: firstargWrapper,
+  timestamp: timestampWrapper,
+  pid: pidWrapper
 };
 
-const argv = require('yargs').argv;
+const argv = require("yargs").argv;
 
 if (argv._.length < 1) {
   console.log(`
@@ -42,18 +39,22 @@ examples:
 }
 
 const subcommands = argv._.map(commandString => {
-  commandString = commandString.replace(/:::\s*/, '');
+  commandString = commandString.replace(/:::\s*/, "");
 
   return { command: commandString };
 });
 
 const instance = new Executor(lineWrappers[argv.w]);
 
-instance.run(subcommands).then(function() {
-  process.exit(0);
-}).catch(function(failedJobs) {
-  failedJobs.forEach(j => console.error(`[llexec: (${process.pid}) job failed]: ${j.command}`));
-  instance.killall();
-  process.exit(1);
-});
-
+instance
+  .run(subcommands)
+  .then(function() {
+    process.exit(0);
+  })
+  .catch(function(failedJobs) {
+    failedJobs.forEach(j =>
+      console.error(`[llexec: (${process.pid}) job failed]: ${j.command}`)
+    );
+    instance.killall();
+    process.exit(1);
+  });

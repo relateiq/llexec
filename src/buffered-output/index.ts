@@ -1,4 +1,4 @@
-export { ColorPalette } from './colors';
+export { ColorPalette } from "./colors";
 
 export class BufferedOutput {
   public static MAX_BUFFER_LINES: number = 10;
@@ -8,7 +8,7 @@ export class BufferedOutput {
   public lineWrapper: (line: string) => string;
 
   private _lineBuffer: string[] = [];
-  private _bufferTimeout: number = 0;
+  private _bufferTimeout: NodeJS.Timeout = null;
 
   constructor(
     dataStream: any,
@@ -19,8 +19,8 @@ export class BufferedOutput {
     this.flushTimeout = flushTimeout;
     this.lineWrapper = lineWrapper;
 
-    this.dataStream.on('data', this.handleData.bind(this));
-    this.dataStream.on('close', this.flush.bind(this));
+    this.dataStream.on("data", this.handleData.bind(this));
+    this.dataStream.on("close", this.flush.bind(this));
   }
 
   public handleData(data) {
@@ -46,7 +46,7 @@ export class BufferedOutput {
       return;
     }
 
-    console.log(this._lineBuffer.join('\n'));
+    console.log(this._lineBuffer.join("\n"));
     this._lineBuffer = [];
   }
 
@@ -55,4 +55,3 @@ export class BufferedOutput {
     this.flush();
   }
 }
-
