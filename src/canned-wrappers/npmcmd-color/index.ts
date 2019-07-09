@@ -2,7 +2,7 @@ import { ITaskInfo, ITask } from "../../task";
 import * as util from "../../util";
 
 function getCommandName(command: string) {
-  return command.split(/\s/g).shift() || "";
+  return command.replace(/npm run /g, "");
 }
 
 let maxCmdLength = null;

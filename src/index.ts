@@ -5,12 +5,14 @@ import { lineWrapper as cmdnameWrapper } from "./canned-wrappers/cmdname-color";
 import { lineWrapper as firstargWrapper } from "./canned-wrappers/firstarg-color";
 import { lineWrapper as timestampWrapper } from "./canned-wrappers/timestamp-color";
 import { lineWrapper as pidWrapper } from "./canned-wrappers/pid-color";
+import { lineWrapper as npmcmdWrapper } from "./canned-wrappers/npmcmd-color";
 
 const lineWrappers = {
   cmdname: cmdnameWrapper,
   firstarg: firstargWrapper,
   timestamp: timestampWrapper,
-  pid: pidWrapper
+  pid: pidWrapper,
+  npmcmd: npmcmdWrapper
 };
 
 const argv = require("yargs").argv;
@@ -23,12 +25,14 @@ llexec is designed to take a list of commands, run them in parallel, and perform
 output buffering on the results so the output is human-readable.
 
 usage:
-  llexec [-w line-wrapper] cmd [, cmd, [...]]
+  llexec [-w line-prefixers] cmd [, cmd, [...]]
 
-  possible line-wrappers:
-    cmdname:    prefixes each line with the name of the command
-    firstarg:   prefixes each line with the first argument (useful for build tools)
-    timestamp:  prefixes each line with a timestamp
+  possible line-prefixers:
+    cmdname:    the name of the command
+    npmcmd:     the 'npm run' task that was executed
+    firstarg:   the first argument (useful for build tools)
+    timestamp:  the timestamp when the line was printed
+    pid:        the PID of the process printing the line
 
 examples:
 
